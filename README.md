@@ -3,11 +3,6 @@
 A robust, database-driven Library Management System developed for the Database Management System course at the National Economics University (DATCOM Lab NEU - College of Technology).
 
 **Group 7 - Khoa 66 DSEB 66A**
-*   **Bach** - DB Architect (Architecture & Security)
-*   **Tung** - Backend Developer (Python CRUD & Web Server)
-*   **Hong Thao** - DB Developer (Stored Procedures & Triggers)
-*   **Duc Anh** - Frontend/Testing (Console UI & Test Cases)
-*   **Tuan** - Documentation (Reports & Diagrams)
 
 ## 🌟 Overview
 
