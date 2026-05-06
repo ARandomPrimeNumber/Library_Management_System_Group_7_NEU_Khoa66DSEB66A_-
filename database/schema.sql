@@ -1,4 +1,4 @@
--- Create the database
+-- Create the DB
 CREATE DATABASE IF NOT EXISTS LibraryManagement;
 USE LibraryManagement;
 
