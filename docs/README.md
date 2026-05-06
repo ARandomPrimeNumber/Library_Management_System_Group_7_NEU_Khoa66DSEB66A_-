@@ -49,10 +49,6 @@ LibraryMS_Project/
 │   ├── transactions.py         # Borrow/return logic
 │   ├── reports.py              # Statistical generation
 │   ├── main.py                 # Console UI entry point
-│   └── web_app/                # (Optional) Web GUI
-│       ├── app.py              # Web server and routes
-│       ├── templates/          # HTML views
-│       └── static/             # CSS/JS assets
 ├── docs/                       # Project Documentation
 │   ├── ERD.png                 # Entity-Relationship Diagram
 │   └── Project_Report.docx     # Final academic report
