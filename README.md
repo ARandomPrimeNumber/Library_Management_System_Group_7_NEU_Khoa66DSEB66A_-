@@ -1,58 +1,93 @@
-# 📚 Library Management System
+# Library Management System
 
-A robust, database-driven Library Management System developed for the Database Management System course at the National Economics University (DATCOM Lab NEU - College of Technology).
+A database-driven Library Management System built with MySQL and Python. It features a normalized database schema, advanced SQL objects (Stored Procedures, Triggers, Views), role-based access control, and AES data encryption.
 
-**Group 7 - Khoa 66 DSEB 66A**
 
-## 🌟 Overview
+## Features
+- **Book Management:** Search and manage books and library inventory.
+- **Reader Profiles:** Register readers with natively encrypted sensitive information (AES).
+- **Transactions:** Safely borrow and return books. Includes automatic inventory triggers and late-fine calculations.
+- **Role-Based Access:** Dedicated console interfaces for Librarians vs. Readers.
+- **Security First:** Built-in SQL injection prevention via parameterized queries, data encryption, and strict MySQL RBAC permissions.
 
-This project is designed to manage library operations effectively, optimizing the borrowing and returning processes. It provides both a core **Console-based Interface** and an optional **Web GUI**. The system is built with a strong emphasis on database normalization (3NF) and security against vulnerabilities like SQL Injection.
+## Prerequisites
+- **MySQL Server** (8.0 or newer recommended)
+- **Python** (3.8 or newer)
 
-## 🛠️ Technology Stack
+## Installation & Setup
 
-*   **Database Management System:** MySQL
-*   **Backend & Application Logic:** Python (`mysql-connector-python` or `SQLAlchemy`)
-*   **Web GUI (Optional Extension):** Flask or FastAPI (Backend), HTML5/CSS3/Vanilla JS (Frontend)
+### 1. Database Initialization
+You must set up the database using your local MySQL root (or admin) account. Open your terminal and run the following scripts in this **exact order**:
 
-## ✨ Core Features
+```bash
+# 1. Create the schema and tables
+mysql -u root -p < database/schema.sql
 
-*   **Book Management:** Add, edit, delete, and search books, categories, and authors.
-*   **Reader Management:** Register readers and update profiles.
-*   **Transaction Handling:** Process book borrowing and returning with automated inventory updates.
-*   **Alerts:** Track and notify regarding overdue books.
-*   **Statistical Reports:** Analytics on book availability, reader borrowing patterns, and overdue items.
-*   **Security:** Role-based access control, parameterized queries for SQL Injection prevention, and data encryption.
+# 2. Create Views, Functions, Procedures, and Triggers
+mysql -u root -p < database/advanced_objects.sql
 
-## 🗄️ Database Architecture
+# 3. Insert sample data (includes AES encryption)
+mysql -u root -p < database/sample_data.sql
 
-The database is built using advanced MySQL objects for high performance and integrity:
-*   **Normalized Schema:** 5 core tables (`Books`, `Categories`, `Authors`, `Readers`, `Borrowing`) in 3NF.
-*   **Indexes:** Optimized for fast search queries.
-*   **Views:** Abstracted data for quick reporting.
-*   **Stored Procedures:** Encapsulated logic for complex borrowing transactions and overdue reporting.
-*   **Triggers:** Automated quantity updates when books are borrowed or returned.
-*   **UDFs:** Custom data calculations and processing.
+# 4. Set up security roles and users (creates the 'library_app' user)
+mysql -u root -p < database/security.sql
+```
 
-## 📂 Repository Structure
+### 2. Python Environment
+Navigate to the root of the project and install the required Python database connector:
+
+```bash
+pip install -r requirements.txt
+```
+
+*Note: The application is pre-configured in `src/config.py` to connect using the `library_app` user created by the setup scripts. You do not need to expose your personal MySQL root password in the code.*
+
+## Usage
+
+To start the interactive Console User Interface, run:
+```bash
+python src/main.py
+```
+
+### Sample Login Accounts
+You can log in to the application using any of the following pre-configured test accounts:
+- **Librarian / Admin:** Username: `lib_admin` | Password: `hash_admin123`
+- **Backend Developer:** Username: `dev_tung` | Password: `hash_dev123`
+- **Reader (User Alpha):** Username: `reader_alpha` | Password: `hash_pass1`
+
+## Running Tests
+
+A standard `unittest` suite is included to verify database connections, user authentication, and core transaction logic. Run the tests via:
+```bash
+python -m unittest tests/test_cases.py
+```
+
+## Repository Structure
 
 ```text
-LibraryMS_Project/
-├── database/                   # Database schema and logic
-│   ├── schema.sql              # DDL scripts
-│   ├── sample_data.sql         # DML scripts for initial data
+├── database/                   
+│   ├── schema.sql              # Table definitions
+│   ├── sample_data.sql         # Initial mock data
 │   ├── advanced_objects.sql    # Views, Procedures, Triggers, UDFs
-│   └── security.sql            # User roles and permissions
-├── src/                        # Python Source Code
-│   ├── config.py               # Database credentials
-│   ├── db_connector.py         # DB connection handling
-│   ├── crud.py                 # Core CRUD operations
-│   ├── transactions.py         # Borrow/return logic
-│   ├── reports.py              # Statistical generation
-│   ├── main.py                 # Console UI entry point
-├── docs/                       # Project Documentation
+│   └── security.sql            # Users, Roles, and Privileges
+├── src/                        
+│   ├── config.py               # DB connection settings
+│   ├── db_connector.py         # MySQL connection manager
+│   ├── crud.py                 # Core read operations & decryption
+│   ├── transactions.py         # Stored procedure wrappers
+│   ├── reports.py              # Analytics and view wrappers
+│   └── main.py                 # Interactive Console UI entry point
+├── tests/                      
+│   └── test_cases.py           # Unittest suite
+├── docs/                       
 │   ├── ERD.png                 # Entity-Relationship Diagram
-│   └── Project_Report.docx     # Final academic report
-└── tests/                      # Testing Suite
-    ├── test_cases.py           # Unit and integration tests
-    └── sample_outputs/         # Test results
+│   └── Project_Report.docx     # Academic report
+└── requirements.txt            # Python dependencies
 ```
+
+## Contributors (Group 7 - Khoa 66 DSEB 66A)
+- **Bach:** DB Architect (Architecture & Security)
+- **Tung:** Backend Developer (Python Core)
+- **Hong Thao:** DB Developer (Procedures & Triggers)
+- **Duc Anh:** Frontend/Testing (Console UI & Test Cases)
+- **Tuan:** Documentation (Reports & Diagrams)
