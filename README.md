@@ -84,10 +84,3 @@ python -m unittest tests/test_cases.py
 │   └── Project_Report.docx     # Academic report
 └── requirements.txt            # Python dependencies
 ```
-
-## Contributors (Group 7 - Khoa 66 DSEB 66A)
-- **Bach:** DB Architect (Architecture & Security)
-- **Tung:** Backend Developer (Python Core)
-- **Hong Thao:** DB Developer (Procedures & Triggers)
-- **Duc Anh:** Frontend/Testing (Console UI & Test Cases)
-- **Tuan:** Documentation (Reports & Diagrams)

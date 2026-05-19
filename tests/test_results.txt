@@ -1,0 +1,21 @@
+================================================================================
+Library Management System - Automated Test Results
+================================================================================
+
+Command Executed: python tests/test_cases.py
+
+Output:
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+OK
+
+================================================================================
+Summary of Passed Tests:
+================================================================================
+1. test_01_authentication_success: Verified valid user (dev_tung) can authenticate and returns correct Role (BackendDev).
+2. test_02_authentication_failure: Verified invalid credentials gracefully return None.
+3. test_03_available_books: Verified the vw_AvailableBooks view correctly fetches inventory data.
+4. test_04_borrow_book_out_of_stock: Verified the sp_BorrowBook stored procedure safely rejects borrowing an invalid/out-of-stock book.
+5. test_05_decrypt_reader_profile: Verified AES_DECRYPT correctly retrieves the raw string value of a Reader's phone number natively from MySQL.
