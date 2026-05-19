@@ -23,11 +23,11 @@ INSERT INTO Authors (AuthorID, AuthorName) VALUES
 
 -- Insert into Readers
 INSERT INTO Readers (ReaderID, ReaderName, Address, PhoneNumber) VALUES
-(1, 'User Alpha', 'Sector 1, Node A', '555-0101'),
-(2, 'User Beta', 'Sector 2, Node B', '555-0102'),
-(3, 'User Gamma', 'Sector 3, Node C', '555-0103'),
-(4, 'User Delta', 'Sector 4, Node D', '555-0104'),
-(5, 'User Epsilon', 'Sector 5, Node E', '555-0105');
+(1, 'User Alpha', AES_ENCRYPT('Sector 1, Node A', 'library_secret_key_2026'), AES_ENCRYPT('555-0101', 'library_secret_key_2026')),
+(2, 'User Beta', AES_ENCRYPT('Sector 2, Node B', 'library_secret_key_2026'), AES_ENCRYPT('555-0102', 'library_secret_key_2026')),
+(3, 'User Gamma', AES_ENCRYPT('Sector 3, Node C', 'library_secret_key_2026'), AES_ENCRYPT('555-0103', 'library_secret_key_2026')),
+(4, 'User Delta', AES_ENCRYPT('Sector 4, Node D', 'library_secret_key_2026'), AES_ENCRYPT('555-0104', 'library_secret_key_2026')),
+(5, 'User Epsilon', AES_ENCRYPT('Sector 5, Node E', 'library_secret_key_2026'), AES_ENCRYPT('555-0105', 'library_secret_key_2026'));
 
 -- Insert into Books
 INSERT INTO Books (BookID, BookName, AuthorID, PublishYear, Quantity, CategoryID) VALUES
@@ -46,3 +46,14 @@ INSERT INTO Borrowing (BorrowID, ReaderID, BookID, BorrowDate, ReturnDate) VALUE
 (1004, 1, 102, '2023-10-12', '2023-10-26'),
 (1005, 4, 105, '2023-10-15', NULL), -- NULL indicates it has not been returned yet
 (1006, 5, 106, '2023-10-20', NULL);
+
+-- Insert into Accounts
+-- Note: Passwords should be hashed in a real application. Using plain text for demonstration.
+INSERT INTO Accounts (Username, PasswordHash, Role, ReaderID) VALUES
+('lib_admin', 'hash_admin123', 'Librarian', NULL),
+('dev_tung', 'hash_dev123', 'BackendDev', NULL),
+('reader_alpha', 'hash_pass1', 'Reader', 1),
+('reader_beta', 'hash_pass2', 'Reader', 2),
+('reader_gamma', 'hash_pass3', 'Reader', 3),
+('reader_delta', 'hash_pass4', 'Reader', 4),
+('reader_epsilon', 'hash_pass5', 'Reader', 5);

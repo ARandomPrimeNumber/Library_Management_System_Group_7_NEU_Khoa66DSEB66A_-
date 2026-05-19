@@ -1,4 +1,4 @@
--- Create the DB
+-- Create the database
 CREATE DATABASE IF NOT EXISTS LibraryManagement;
 USE LibraryManagement;
 
@@ -18,8 +18,8 @@ CREATE TABLE Authors (
 CREATE TABLE Readers (
     ReaderID INT PRIMARY KEY,
     ReaderName VARCHAR(100),
-    Address VARCHAR(255),
-    PhoneNumber VARCHAR(15)
+    Address VARBINARY(255),
+    PhoneNumber VARBINARY(255)
 );
 
 -- 4. Create Books Table (References Authors and Categories)
@@ -43,4 +43,14 @@ CREATE TABLE Borrowing (
     ReturnDate DATE,
     FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID),
     FOREIGN KEY (BookID) REFERENCES Books(BookID)
+);
+
+-- 6. Create Accounts Table (Application-level logins)
+CREATE TABLE Accounts (
+    AccountID INT PRIMARY KEY AUTO_INCREMENT,
+    Username VARCHAR(50) UNIQUE NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Role ENUM('Librarian', 'Reader', 'BackendDev') NOT NULL,
+    ReaderID INT,
+    FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID)
 );
