@@ -67,3 +67,7 @@ class DatabaseManager:
         except Error as e:
             print(f"Stored Procedure Error: {e}")
             return None
+
+
+# Shared database instance — import this instead of creating new DatabaseManager() instances
+db = DatabaseManager()

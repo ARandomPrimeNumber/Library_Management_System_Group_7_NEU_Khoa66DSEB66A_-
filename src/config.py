@@ -9,5 +9,7 @@ DB_CONFIG = {
     'port': 3306
 }
 
-# The AES encryption key used for sensitive Reader information
+# The AES encryption key used for sensitive Reader information.
+# IMPORTANT: This key is also hardcoded in database/advanced_objects.sql (sp_RegisterReader).
+# If you change it here, you MUST update it there too, or decryption will silently fail.
 AES_SECRET_KEY = 'library_secret_key_2026'

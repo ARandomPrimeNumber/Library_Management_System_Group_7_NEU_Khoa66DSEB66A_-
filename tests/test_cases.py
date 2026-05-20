@@ -30,8 +30,8 @@ class LibrarySystemTests(unittest.TestCase):
         
     def test_04_borrow_book_out_of_stock(self):
         """Test the stored procedure logic for an out of stock (or invalid) book."""
-        # Using a dummy ID to trigger the out of stock logic in the SP
-        result = borrow_book(9999, 1, 9999)
+        # Using a dummy BookID to trigger the out of stock logic in the SP
+        result = borrow_book(1, 9999)
         self.assertIn('out of stock', result.lower(), "Should return out of stock error.")
         
     def test_05_decrypt_reader_profile(self):

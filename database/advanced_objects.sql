@@ -30,20 +30,21 @@ JOIN Authors a ON b.AuthorID = a.AuthorID
 JOIN Categories c ON b.CategoryID = c.CategoryID
 WHERE b.Quantity > 0;
 
--- View 2: Overdue Borrowing Records (Assuming a 14-day borrow period)
+-- View 2: Overdue Borrowing Records (uses stored DueDate column)
 CREATE OR REPLACE VIEW vw_OverdueBorrows AS
 SELECT 
     br.BorrowID,
     r.ReaderName,
-    r.PhoneNumber,
+    CAST(AES_DECRYPT(r.PhoneNumber, 'library_secret_key_2026') AS CHAR) AS PhoneNumber,
     b.BookName,
     br.BorrowDate,
-    DATEDIFF(CURDATE(), DATE_ADD(br.BorrowDate, INTERVAL 14 DAY)) AS DaysOverdue
+    br.DueDate,
+    DATEDIFF(CURDATE(), br.DueDate) AS DaysOverdue
 FROM Borrowing br
 JOIN Readers r ON br.ReaderID = r.ReaderID
 JOIN Books b ON br.BookID = b.BookID
 WHERE br.ReturnDate IS NULL 
-AND DATEDIFF(CURDATE(), br.BorrowDate) > 14;
+AND br.DueDate < CURDATE();
 
 
 -- ==============================================================================
@@ -88,7 +89,6 @@ DELIMITER //
 -- Procedure 1: Safely Borrow a Book
 DROP PROCEDURE IF EXISTS sp_BorrowBook //
 CREATE PROCEDURE sp_BorrowBook(
-    IN p_BorrowID INT, -- Passed from Python app
     IN p_ReaderID INT,
     IN p_BookID INT,
     OUT p_Message VARCHAR(100)
@@ -99,12 +99,13 @@ BEGIN
     -- Check if the book is available in stock
     SELECT Quantity INTO v_AvailableQuantity 
     FROM Books 
-    WHERE BookID = p_BookID;
+    WHERE BookID = p_BookID
+    FOR UPDATE;
     
     IF v_AvailableQuantity > 0 THEN
-        -- Insert into borrowing table
-        INSERT INTO Borrowing (BorrowID, ReaderID, BookID, BorrowDate, ReturnDate) 
-        VALUES (p_BorrowID, p_ReaderID, p_BookID, CURDATE(), NULL);
+        -- Insert into borrowing table (BorrowID is AUTO_INCREMENT)
+        INSERT INTO Borrowing (ReaderID, BookID, BorrowDate, DueDate, ReturnDate) 
+        VALUES (p_ReaderID, p_BookID, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 14 DAY), NULL);
         
         SET p_Message = 'Book borrowed successfully.';
     ELSE
@@ -122,9 +123,10 @@ CREATE PROCEDURE sp_ReturnBook(
 BEGIN
     DECLARE v_BorrowDate DATE;
     DECLARE v_ReturnDate DATE;
+    DECLARE v_ReaderID INT;
     
     -- Check if record exists and its return status
-    SELECT BorrowDate, ReturnDate INTO v_BorrowDate, v_ReturnDate 
+    SELECT BorrowDate, ReturnDate, ReaderID INTO v_BorrowDate, v_ReturnDate, v_ReaderID 
     FROM Borrowing 
     WHERE BorrowID = p_BorrowID;
     
@@ -142,6 +144,13 @@ BEGIN
         
         -- Calculate fine using our UDF
         SET p_FineAmount = fn_CalculateFine(v_BorrowDate, CURDATE());
+        
+        -- Log the fine in the FineLedger if overdue
+        IF p_FineAmount > 0 THEN
+            INSERT INTO FineLedger (BorrowID, ReaderID, FineAmount, FineDate)
+            VALUES (p_BorrowID, v_ReaderID, p_FineAmount, CURDATE());
+        END IF;
+        
         SET p_Message = 'Book returned successfully.';
     END IF;
 END //
@@ -166,12 +175,11 @@ BEGIN
     IF v_UserExists > 0 THEN
         SET p_Message = 'Error: Username already exists.';
     ELSE
-        -- Generate a new ReaderID (since it's not AUTO_INCREMENT)
-        SELECT COALESCE(MAX(ReaderID), 0) + 1 INTO v_NewReaderID FROM Readers;
+        -- ReaderID is AUTO_INCREMENT; no manual ID generation needed
+        INSERT INTO Readers (ReaderName, Address, PhoneNumber)
+        VALUES (p_ReaderName, AES_ENCRYPT(p_Address, 'library_secret_key_2026'), AES_ENCRYPT(p_PhoneNumber, 'library_secret_key_2026'));
         
-        -- Insert the Reader Profile
-        INSERT INTO Readers (ReaderID, ReaderName, Address, PhoneNumber)
-        VALUES (v_NewReaderID, p_ReaderName, AES_ENCRYPT(p_Address, 'library_secret_key_2026'), AES_ENCRYPT(p_PhoneNumber, 'library_secret_key_2026'));
+        SET v_NewReaderID = LAST_INSERT_ID();
         
         -- Insert the Login Account
         INSERT INTO Accounts (Username, PasswordHash, Role, ReaderID)

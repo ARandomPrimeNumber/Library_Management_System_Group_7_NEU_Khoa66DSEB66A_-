@@ -16,7 +16,7 @@ CREATE TABLE Authors (
 
 -- 3. Create Readers Table
 CREATE TABLE Readers (
-    ReaderID INT PRIMARY KEY,
+    ReaderID INT PRIMARY KEY AUTO_INCREMENT,
     ReaderName VARCHAR(100),
     Address VARBINARY(255),
     PhoneNumber VARBINARY(255)
@@ -36,10 +36,11 @@ CREATE TABLE Books (
 
 -- 5. Create Borrowing Table (References Readers and Books)
 CREATE TABLE Borrowing (
-    BorrowID INT PRIMARY KEY,
+    BorrowID INT PRIMARY KEY AUTO_INCREMENT,
     ReaderID INT,
     BookID INT,
     BorrowDate DATE,
+    DueDate DATE,
     ReturnDate DATE,
     FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID),
     FOREIGN KEY (BookID) REFERENCES Books(BookID)
@@ -52,5 +53,16 @@ CREATE TABLE Accounts (
     PasswordHash VARCHAR(255) NOT NULL,
     Role ENUM('Librarian', 'Reader', 'BackendDev') NOT NULL,
     ReaderID INT,
+    FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID)
+);
+
+-- 7. Create Fine Ledger Table (Persistent record of fines charged on return)
+CREATE TABLE FineLedger (
+    FineID INT PRIMARY KEY AUTO_INCREMENT,
+    BorrowID INT NOT NULL,
+    ReaderID INT NOT NULL,
+    FineAmount INT NOT NULL,
+    FineDate DATE NOT NULL,
+    FOREIGN KEY (BorrowID) REFERENCES Borrowing(BorrowID),
     FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID)
 );

@@ -8,7 +8,7 @@ A database-driven Library Management System built with MySQL and Python. It feat
 - **Reader Profiles:** Register readers with natively encrypted sensitive information (AES).
 - **Transactions:** Safely borrow and return books. Includes automatic inventory triggers and late-fine calculations.
 - **Role-Based Access:** Dedicated console interfaces for Librarians vs. Readers.
-- **Security First:** Built-in SQL injection prevention via parameterized queries, data encryption, and strict MySQL RBAC permissions.
+- **Security First:** SHA-256 password hashing, SQL injection prevention via parameterized queries, AES data encryption, and strict MySQL RBAC permissions.
 
 ## Prerequisites
 - **MySQL Server** (8.0 or newer recommended)
@@ -50,16 +50,28 @@ python src/main.py
 ```
 
 ### Sample Login Accounts
-You can log in to the application using any of the following pre-configured test accounts:
+You can log in to the application using any of the following pre-configured test accounts (passwords are stored as SHA-256 hashes):
 - **Librarian / Admin:** Username: `lib_admin` | Password: `hash_admin123`
 - **Backend Developer:** Username: `dev_tung` | Password: `hash_dev123`
 - **Reader (User Alpha):** Username: `reader_alpha` | Password: `hash_pass1`
+
+### Librarian Menu
+- View overdue borrows across all readers
+- Process book returns (with automatic late-fine calculation)
+- Register new reader accounts
+
+### Reader Menu
+- View personal profile (with decrypted address & phone)
+- Browse available books in the catalog
+- Borrow a book
+- View currently borrowed books
+- Return a book (with fine display if overdue)
 
 ## Running Tests
 
 A standard `unittest` suite is included to verify database connections, user authentication, and core transaction logic. Run the tests via:
 ```bash
-python -m unittest tests/test_cases.py
+python tests/test_cases.py
 ```
 
 ## Repository Structure
@@ -73,7 +85,7 @@ python -m unittest tests/test_cases.py
 ├── src/                        
 │   ├── config.py               # DB connection settings
 │   ├── db_connector.py         # MySQL connection manager
-│   ├── crud.py                 # Core read operations & decryption
+│   ├── crud.py                 # Core read operations, decryption, & borrow queries
 │   ├── transactions.py         # Stored procedure wrappers
 │   ├── reports.py              # Analytics and view wrappers
 │   └── main.py                 # Interactive Console UI entry point

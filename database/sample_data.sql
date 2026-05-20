@@ -38,22 +38,26 @@ INSERT INTO Books (BookID, BookName, AuthorID, PublishYear, Quantity, CategoryID
 (105, 'History of Tomorrow', 5, 2022, 7, 3),
 (106, 'Cybernetic Horizons', 1, 2024, 4, 1);
 
--- Insert into Borrowing
-INSERT INTO Borrowing (BorrowID, ReaderID, BookID, BorrowDate, ReturnDate) VALUES
-(1001, 1, 101, '2023-10-01', '2023-10-15'),
-(1002, 2, 103, '2023-10-05', '2023-10-19'),
-(1003, 3, 104, '2023-10-10', '2023-10-24'),
-(1004, 1, 102, '2023-10-12', '2023-10-26'),
-(1005, 4, 105, '2023-10-15', NULL), -- NULL indicates it has not been returned yet
-(1006, 5, 106, '2023-10-20', NULL);
+-- Insert into Borrowing (DueDate = BorrowDate + 14 days)
+INSERT INTO Borrowing (BorrowID, ReaderID, BookID, BorrowDate, DueDate, ReturnDate) VALUES
+(1001, 1, 101, '2023-10-01', '2023-10-15', '2023-10-15'),
+(1002, 2, 103, '2023-10-05', '2023-10-19', '2023-10-19'),
+(1003, 3, 104, '2023-10-10', '2023-10-24', '2023-10-28'), -- Returned 4 days late
+(1004, 1, 102, '2023-10-12', '2023-10-26', '2023-10-26'),
+(1005, 4, 105, DATE_SUB(CURDATE(), INTERVAL 20 DAY), DATE_SUB(CURDATE(), INTERVAL 6 DAY), NULL), -- Active borrow: ~6 days overdue
+(1006, 5, 106, DATE_SUB(CURDATE(), INTERVAL 16 DAY), DATE_SUB(CURDATE(), INTERVAL 2 DAY), NULL); -- Active borrow: ~2 days overdue
 
 -- Insert into Accounts
--- Note: Passwords should be hashed in a real application. Using plain text for demonstration.
+-- Passwords are hashed using SHA2-256. The Python app hashes user input before comparing.
 INSERT INTO Accounts (Username, PasswordHash, Role, ReaderID) VALUES
-('lib_admin', 'hash_admin123', 'Librarian', NULL),
-('dev_tung', 'hash_dev123', 'BackendDev', NULL),
-('reader_alpha', 'hash_pass1', 'Reader', 1),
-('reader_beta', 'hash_pass2', 'Reader', 2),
-('reader_gamma', 'hash_pass3', 'Reader', 3),
-('reader_delta', 'hash_pass4', 'Reader', 4),
-('reader_epsilon', 'hash_pass5', 'Reader', 5);
+('lib_admin', SHA2('hash_admin123', 256), 'Librarian', NULL),
+('dev_tung', SHA2('hash_dev123', 256), 'BackendDev', NULL),
+('reader_alpha', SHA2('hash_pass1', 256), 'Reader', 1),
+('reader_beta', SHA2('hash_pass2', 256), 'Reader', 2),
+('reader_gamma', SHA2('hash_pass3', 256), 'Reader', 3),
+('reader_delta', SHA2('hash_pass4', 256), 'Reader', 4),
+('reader_epsilon', SHA2('hash_pass5', 256), 'Reader', 5);
+
+-- Insert sample fine record (borrow 1003 was returned 4 days late: 4 x 5000 = 20000 VND)
+INSERT INTO FineLedger (BorrowID, ReaderID, FineAmount, FineDate) VALUES
+(1003, 3, 20000, '2023-10-28');

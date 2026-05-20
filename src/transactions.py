@@ -1,13 +1,12 @@
-from src.db_connector import DatabaseManager
+import hashlib
+from src.db_connector import db
 
-db = DatabaseManager()
-
-def borrow_book(borrow_id, reader_id, book_id):
+def borrow_book(reader_id, book_id):
     """Call the sp_BorrowBook stored procedure."""
-    args = (borrow_id, reader_id, book_id, '')
+    args = (reader_id, book_id, '')
     result = db.call_procedure('sp_BorrowBook', args)
     if result:
-        return result[3] # p_Message is the 4th OUT parameter (index 3)
+        return result[2] # p_Message is the 3rd OUT parameter (index 2)
     return "Error executing transaction."
 
 def return_book(borrow_id):
@@ -22,7 +21,8 @@ def register_reader(username, password, name, address, phone):
     """Call the sp_RegisterReader stored procedure.
     Note: The SP internally encrypts Address and PhoneNumber using AES_ENCRYPT.
     """
-    args = (username, password, name, address, phone, '')
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    args = (username, password_hash, name, address, phone, '')
     result = db.call_procedure('sp_RegisterReader', args)
     if result:
         return result[5]
