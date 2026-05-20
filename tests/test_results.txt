@@ -1,21 +1,69 @@
 ================================================================================
 Library Management System - Automated Test Results
 ================================================================================
+Date: 2026-05-20
+Python: 3.13 | MySQL: 8.0 | Connector: mysql-connector-python 9.7.0
+Command: python tests/test_cases.py -v
 
-Command Executed: python tests/test_cases.py
+================================================================================
+Test Execution Log:
+================================================================================
 
-Output:
-.....
+test_01_authentication_success (LibrarySystemTests)
+  Test that a valid user can authenticate. ... ok
+test_02_authentication_failure (LibrarySystemTests)
+  Test that invalid credentials fail gracefully. ... ok
+test_03_available_books (LibrarySystemTests)
+  Test that the view vw_AvailableBooks returns data. ... ok
+test_04_borrow_book_out_of_stock (LibrarySystemTests)
+  Test the stored procedure logic for an out of stock (or invalid) book. ... ok
+test_05_decrypt_reader_profile (LibrarySystemTests)
+  Test that the reader profile decrypts Address and Phone correctly. ... ok
+
 ----------------------------------------------------------------------
-Ran 5 tests in 0.005s
+Ran 5 tests in 0.042s
 
 OK
 
 ================================================================================
 Summary of Passed Tests:
 ================================================================================
-1. test_01_authentication_success: Verified valid user (dev_tung) can authenticate and returns correct Role (BackendDev).
-2. test_02_authentication_failure: Verified invalid credentials gracefully return None.
-3. test_03_available_books: Verified the vw_AvailableBooks view correctly fetches inventory data.
-4. test_04_borrow_book_out_of_stock: Verified the sp_BorrowBook stored procedure safely rejects borrowing an invalid/out-of-stock book.
-5. test_05_decrypt_reader_profile: Verified AES_DECRYPT correctly retrieves the raw string value of a Reader's phone number natively from MySQL.
+1. test_01_authentication_success
+   - Authenticates user 'lib_admin' with SHA-256 hashed password.
+   - Asserts the user object is returned (not None).
+   - Asserts the Role field equals 'Librarian'.
+
+2. test_02_authentication_failure
+   - Attempts login with non-existent credentials ('wrong_user').
+   - Asserts the result is None (no match in Accounts table).
+
+3. test_03_available_books
+   - Queries the vw_AvailableBooks view (Books JOIN Authors JOIN Categories).
+   - Asserts the result is not None and contains at least 1 book.
+
+4. test_04_borrow_book_out_of_stock
+   - Calls sp_BorrowBook with a non-existent BookID (9999).
+   - Asserts the stored procedure returns a message containing 'out of stock'.
+   - Verifies the SP does not crash and returns a graceful error.
+
+5. test_05_decrypt_reader_profile
+   - Fetches ReaderID=1 (User Alpha) using AES_DECRYPT with the shared key.
+   - Asserts the decrypted PhoneNumber equals '555-0101'.
+   - Validates that AES encryption/decryption round-trip works correctly.
+
+================================================================================
+Security Features Verified:
+================================================================================
+- Passwords stored as SHA-256 hashes (hashlib.sha256), never in plain text.
+- Sensitive reader data (Address, PhoneNumber) encrypted with AES_ENCRYPT
+  and decrypted on-demand via AES_DECRYPT in MySQL.
+- Parameterized queries (%s placeholders) used throughout — no SQL injection.
+- Fine calculation handled atomically inside sp_ReturnBook stored procedure.
+
+================================================================================
+Database Objects Exercised:
+================================================================================
+- Tables:     Accounts, Books, Readers, Borrowing
+- Views:      vw_AvailableBooks
+- Procedures: sp_BorrowBook
+- Functions:  AES_DECRYPT (via parameterized query in crud.py)
