@@ -51,8 +51,7 @@ python src/main.py
 
 ### Sample Login Accounts
 You can log in to the application using any of the following pre-configured test accounts (passwords are stored as SHA-256 hashes):
-- **Librarian / Admin:** Username: `lib_admin` | Password: `hash_admin123`
-- **Backend Developer:** Username: `dev_tung` | Password: `hash_dev123`
+- **Librarian:** Username: `lib_admin` | Password: `hash_admin123`
 - **Reader (User Alpha):** Username: `reader_alpha` | Password: `hash_pass1`
 
 ### Librarian Menu

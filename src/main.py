@@ -16,6 +16,25 @@ def get_int_input(prompt):
         except ValueError:
             print("Invalid input. Please enter a number.")
 
+def get_non_empty_input(prompt):
+    """Get a non-empty string from user input."""
+    while True:
+        value = input(prompt).strip()
+        if value:
+            return value
+        print("This field cannot be empty.")
+
+def get_phone_input(prompt):
+    """Get a valid phone number (digits, dashes, and + only)."""
+    while True:
+        value = input(prompt).strip()
+        if not value:
+            print("Phone number cannot be empty.")
+        elif not all(c in '0123456789-+' for c in value):
+            print("Invalid phone number. Use digits, dashes, or + only.")
+        else:
+            return value
+
 def librarian_menu():
     while True:
         print("\n=== LIBRARIAN MENU ===")
@@ -42,11 +61,11 @@ def librarian_menu():
                 print(f"Fine applied: {result['fine']} VND (recorded in Fine Ledger)")
         elif choice == '3':
             print("\n--- Register New Reader ---")
-            username = input("New Username: ")
-            password = input("New Password (Hash): ")
-            name = input("Reader Full Name: ")
-            address = input("Address: ")
-            phone = input("Phone Number: ")
+            username = get_non_empty_input("New Username: ")
+            password = get_non_empty_input("New Password: ")
+            name = get_non_empty_input("Reader Full Name: ")
+            address = get_non_empty_input("Address: ")
+            phone = get_phone_input("Phone Number: ")
             msg = register_reader(username, password, name, address, phone)
             print(f"Result: {msg}")
         elif choice == '4':
@@ -161,7 +180,7 @@ def main():
         user = authenticate_user(username, password)
         if user:
             print(f"\nLogin successful! Welcome, {username}.")
-            if user['Role'] in ('Librarian', 'BackendDev'):
+            if user['Role'] == 'Librarian':
                 librarian_menu()
             elif user['Role'] == 'Reader':
                 # Check for overdue books and warn at login

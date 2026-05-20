@@ -51,7 +51,7 @@ CREATE TABLE Accounts (
     AccountID INT PRIMARY KEY AUTO_INCREMENT,
     Username VARCHAR(50) UNIQUE NOT NULL,
     PasswordHash VARCHAR(255) NOT NULL,
-    Role ENUM('Librarian', 'Reader', 'BackendDev') NOT NULL,
+    Role ENUM('Librarian', 'Reader') NOT NULL,
     ReaderID INT,
     FOREIGN KEY (ReaderID) REFERENCES Readers(ReaderID)
 );

@@ -13,9 +13,9 @@ class LibrarySystemTests(unittest.TestCase):
 
     def test_01_authentication_success(self):
         """Test that a valid user can authenticate."""
-        user = authenticate_user('dev_tung', 'hash_dev123')
+        user = authenticate_user('lib_admin', 'hash_admin123')
         self.assertIsNotNone(user, "User should be found in the database.")
-        self.assertEqual(user['Role'], 'BackendDev', "Role mismatch.")
+        self.assertEqual(user['Role'], 'Librarian', "Role mismatch.")
 
     def test_02_authentication_failure(self):
         """Test that invalid credentials fail gracefully."""

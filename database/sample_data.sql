@@ -51,7 +51,6 @@ INSERT INTO Borrowing (BorrowID, ReaderID, BookID, BorrowDate, DueDate, ReturnDa
 -- Passwords are hashed using SHA2-256. The Python app hashes user input before comparing.
 INSERT INTO Accounts (Username, PasswordHash, Role, ReaderID) VALUES
 ('lib_admin', SHA2('hash_admin123', 256), 'Librarian', NULL),
-('dev_tung', SHA2('hash_dev123', 256), 'BackendDev', NULL),
 ('reader_alpha', SHA2('hash_pass1', 256), 'Reader', 1),
 ('reader_beta', SHA2('hash_pass2', 256), 'Reader', 2),
 ('reader_gamma', SHA2('hash_pass3', 256), 'Reader', 3),
